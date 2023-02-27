@@ -1,7 +1,7 @@
 # create github workflow, on push or merge to main, it will build and push to ecr.
 # Path: .github/workflows/ecr.yml
 
-name: Build docker image and push to ECR
+name: Build docker image and push to ECR then, deploy!
 
 on:
   push:
@@ -33,6 +33,17 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1
       with:
         registry-type: public
+    
+    - name: Make envfile
+      uses: SpicyPizza/create-envfile@v1.3
+      with:
+        envkey_DEBUG: false
+        envkey_SOME_API_KEY: "123456abcdef"
+        envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        some_other_variable: foobar
+        directory: <directory_name>
+        file_name: .env
+        fail_on_empty: false
     
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
